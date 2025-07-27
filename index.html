@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Undangan Pernikahan Interaktif - Adam & Hawa</title>
+    <title>Undangan Pernikahan Interaktif - Ima & Arif</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -79,7 +79,7 @@
         /* Background Image untuk semua section */
         #section-1, #section-2, #section-3, #section-4, #section-5 {
             background-size: cover;
-            background-position: center;
+            background-position: center center;
         }
         #section-1 { background-image: url('image/section1.gif'); }
         #section-2 { background-image: url('image/section2.gif'); }
@@ -166,6 +166,19 @@
             opacity: 0;
             visibility: hidden;
         }
+
+        /* Perbaikan untuk perangkat mobile dan tablet */
+        @media (max-width: 767px) {
+            .nav-button-container {
+                top: auto;
+                bottom: 20px;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+                flex-direction: row;
+                gap: 20px;
+            }
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -206,7 +219,7 @@
                     <h4 class="font-serif text-2xl">Akad Nikah & Resepsi</h4>
                     <p class="mt-2"><strong>Sabtu, 23 Agustus 2025</strong></p>
                     <p>Akad Nikah :  Pukul 09.00 WIB</p>
-					<p>Resepsi : Pukul 11.00 - 13.00 WIB</p>
+                    <p>Resepsi : Pukul 11.00 - 13.00 WIB</p>
                     <p class="mt-4 font-bold">Plaza Anggrek LPPI</p>
                     <p class="text-sm">Jl. Kemang Raya No.35, RT.12/RW.5, Bangka, Kec. Mampang Prpt., Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12730</p>
                 </div>
