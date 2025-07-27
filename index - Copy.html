@@ -14,7 +14,7 @@
         - Navigasi -> Goal: Organize/Change -> JS-controlled scrolling & class toggling -> Memberikan pengalaman terpandu, bukan gulir bebas.
         - Transisi Bagian -> Goal: Engagement -> CSS Transitions (opacity, transform) -> Membuat perpindahan antar bagian terasa halus dan elegan.
         - Animasi Konten -> Goal: Inform/Engagement -> CSS Transitions pada elemen anak (reveal) -> Setiap teks dan gambar muncul secara dinamis saat bagiannya aktif, meningkatkan "wow factor".
-        - Formulir Ucapan -> Goal: Organize/Interact -> HTML Form + Firebase Firestore -> Memungkinkan pengguna mengirim ucapan yang disimpan secara permanen dan ditampilkan secara real-time untuk semua pengguna.
+        - Modal (Galeri/Hadiah) -> Goal: Organize -> JS-controlled modals -> Menjaga setiap layar utama tetap bersih, dengan detail tambahan tersedia sesuai permintaan.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -97,6 +97,9 @@
         #section-2 p, #section-3 p, #section-4 p, #section-5 p, #section-3 strong {
             color: #8A7A6A;
         }
+        #section-4 .border-dashed {
+            border-color: #D3C4B6;
+        }
         
         .section-screen > div {
             position: relative;
@@ -155,11 +158,14 @@
             opacity: 0;
             pointer-events: none;
         }
-        
-        #wishes-container::-webkit-scrollbar { width: 8px; }
-        #wishes-container::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.5); border-radius: 10px; }
-        #wishes-container::-webkit-scrollbar-thumb { background: #A98F7A; border-radius: 10px; }
-        #wishes-container::-webkit-scrollbar-thumb:hover { background: #8A7A6A; }
+
+        .modal {
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .modal.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
 
         /* Perbaikan untuk perangkat mobile dan tablet */
         @media (max-width: 767px) {
@@ -223,28 +229,22 @@
              </div>
         </section>
 
-        <!-- Section 4: Wishes Form -->
+        <!-- Section 4: Gallery & Wishes -->
         <section id="section-4" class="section-screen">
-            <div class="text-center w-full max-w-md">
-                 <h3 class="font-serif text-4xl mb-8 reveal-item">Berikan Ucapan</h3>
-                 <div class="bg-white bg-opacity-80 p-6 md:p-8 rounded-lg shadow-lg w-full reveal-item">
-                    <form id="wish-form" class="text-left">
-                        <div class="mb-4">
-                            <label for="wisher-name" class="block text-gray-700 text-sm font-bold mb-2">Nama</label>
-                            <input type="text" id="wisher-name" name="wisher-name" placeholder="Masukkan nama Anda" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-800" required>
-                        </div>
-                        <div class="mb-6">
-                            <label for="wish-message" class="block text-gray-700 text-sm font-bold mb-2">Ucapan Anda</label>
-                            <textarea id="wish-message" name="wish-message" placeholder="Tuliskan ucapan dan doa terbaik Anda..." rows="3" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-800" required></textarea>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn-primary py-2 px-6 rounded-full w-full">Kirim Ucapan</button>
-                        </div>
-                    </form>
-                 </div>
-                 <div id="wishes-container" class="mt-6 w-full max-h-40 md:max-h-48 overflow-y-auto bg-white bg-opacity-80 p-6 rounded-lg shadow-lg text-left reveal-item">
-                    <!-- Ucapan akan ditambahkan di sini secara dinamis -->
-                 </div>
+            <div class="text-center w-full max-w-4xl">
+                 <h3 class="font-serif text-4xl mb-12 reveal-item">Galeri & Ucapan</h3>
+                 <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="text-center p-8 border-2 border-dashed rounded-lg reveal-item">
+                        <h4 class="font-serif text-2xl mb-4">Momen Bahagia</h4>
+                         <p class="mb-6">Beberapa kenangan yang kami abadikan.</p>
+                         <button id="btn-gallery" class="py-3 px-6 rounded-full btn-primary">Lihat Galeri Foto</button>
+                    </div>
+                    <div class="text-center p-8 border-2 border-dashed rounded-lg reveal-item">
+                        <h4 class="font-serif text-2xl mb-4">Kirim Hadiah</h4>
+                         <p class="mb-6">Doa restu Anda adalah kado terindah bagi kami.</p>
+                         <button id="btn-gift" class="py-3 px-6 rounded-full btn-primary">Amplop Digital</button>
+                    </div>
+                </div>
             </div>
         </section>
         
@@ -268,37 +268,42 @@
         </div>
     </div>
 
-    <script type="module">
-        // Import fungsi yang diperlukan dari Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <!-- Modals -->
+    <div id="gallery-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                 <h4 class="font-serif text-2xl text-accent-dark">Galeri Foto</h4>
+                 <button class="close-modal text-3xl font-bold">&times;</button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <img src="https://placehold.co/400x400/E8DED2/5D544D?text=Foto+Anda+1" class="rounded-lg w-full h-auto object-cover" alt="Foto prewedding 1">
+                <img src="https://placehold.co/400x600/E8DED2/5D544D?text=Foto+Anda+2" class="rounded-lg w-full h-auto object-cover" alt="Foto prewedding 2">
+                <img src="https://placehold.co/400x400/E8DED2/5D544D?text=Foto+Anda+3" class="rounded-lg w-full h-auto object-cover" alt="Foto prewedding 3">
+            </div>
+        </div>
+    </div>
+    
+    <div id="gift-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg p-8 max-w-sm w-full text-center">
+             <div class="flex justify-between items-center mb-4">
+                <h4 class="font-serif text-2xl text-accent-dark">Amplop Digital</h4>
+                <button class="close-modal text-3xl font-bold">&times;</button>
+            </div>
+            <div class="space-y-4 text-left">
+                <div>
+                    <p class="font-bold">Bank Bahagia</p>
+                    <p>1234 5678 9012 (ABC Bank)</p>
+                </div>
+                 <div>
+                    <p class="font-bold">E-Wallet (GoPay / OVO)</p>
+                    <p>0812 3456 7890 (E-Wallet)</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // Konfigurasi Firebase Anda
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-wedding-app';
-
-        // Inisialisasi Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        // Path koleksi di Firestore
-        const wishesCollectionPath = `/artifacts/${appId}/public/data/wishes`;
-        const wishesCollection = collection(db, wishesCollectionPath);
-
-        document.addEventListener('DOMContentLoaded', async function () {
-            // Autentikasi pengguna
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Authentication failed:", error);
-            }
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
             const container = document.getElementById('invitation-container');
             const sections = document.querySelectorAll('.section-screen');
             const sideNav = document.getElementById('side-nav');
@@ -355,67 +360,30 @@
                 observer.observe(section);
             });
 
-            // Wish Form Logic
-            const wishForm = document.getElementById('wish-form');
-            const wisherNameInput = document.getElementById('wisher-name');
-            const wishMessageInput = document.getElementById('wish-message');
-            const wishesContainer = document.getElementById('wishes-container');
+            // Modal Logic
+            const galleryModal = document.getElementById('gallery-modal');
+            const btnGallery = document.getElementById('btn-gallery');
+            const giftModal = document.getElementById('gift-modal');
+            const btnGift = document.getElementById('btn-gift');
+            const closeButtons = document.querySelectorAll('.close-modal');
 
-            // Menampilkan ucapan secara real-time
-            const q = query(wishesCollection);
-            onSnapshot(q, (snapshot) => {
-                let wishes = [];
-                snapshot.forEach((doc) => {
-                    wishes.push({ ...doc.data(), id: doc.id });
-                });
+            function openModal(modal) { modal.classList.remove('hidden'); }
+            function closeModal(modal) { modal.classList.add('hidden'); }
 
-                // Urutkan ucapan berdasarkan waktu (terbaru di atas)
-                wishes.sort((a, b) => b.createdAt - a.createdAt);
+            btnGallery.addEventListener('click', () => openModal(galleryModal));
+            btnGift.addEventListener('click', () => openModal(giftModal));
 
-                wishesContainer.innerHTML = ''; // Kosongkan container
-                wishes.forEach(wish => {
-                    const wishElement = document.createElement('div');
-                    wishElement.classList.add('border-b', 'border-gray-300', 'pb-2', 'mb-2', 'last:border-b-0');
-
-                    const nameElement = document.createElement('p');
-                    nameElement.classList.add('font-bold', 'text-gray-800');
-                    nameElement.textContent = wish.name;
-
-                    const messageElement = document.createElement('p');
-                    messageElement.classList.add('text-gray-600', 'text-sm');
-                    messageElement.textContent = wish.message;
-
-                    wishElement.appendChild(nameElement);
-                    wishElement.appendChild(messageElement);
-                    wishesContainer.appendChild(wishElement);
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    closeModal(galleryModal);
+                    closeModal(giftModal);
                 });
             });
 
-
-            // Mengirim ucapan ke Firestore
-            wishForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                const name = wisherNameInput.value.trim();
-                const message = wishMessageInput.value.trim();
-
-                if (name === '' || message === '') {
-                    alert('Nama dan ucapan tidak boleh kosong.');
-                    return;
-                }
-
-                try {
-                    await addDoc(wishesCollection, {
-                        name: name,
-                        message: message,
-                        createdAt: serverTimestamp()
-                    });
-                    wisherNameInput.value = '';
-                    wishMessageInput.value = '';
-                } catch (error) {
-                    console.error("Error adding document: ", error);
-                    alert('Gagal mengirim ucapan. Silakan coba lagi.');
-                }
+            [galleryModal, giftModal].forEach(modal => {
+                 modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal(modal);
+                });
             });
         });
     </script>
