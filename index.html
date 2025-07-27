@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undangan Pernikahan Interaktif - Adam & Hawa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: Mengubah dari model gulir panjang menjadi SPA berbasis "layar penuh" per bagian. Setiap bagian (Hero, Mempelai, Acara, dll.) menempati seluruh viewport. Pengguna menavigasi antar bagian dengan tombol "lanjutkan", yang memicu transisi animasi ke bagian berikutnya. Struktur ini menciptakan alur cerita yang lebih terkontrol dan sinematik, sesuai permintaan pengguna untuk interaktivitas dan transisi antar informasi. -->
+    <!-- Visualization & Content Choices: 
+        - Navigasi -> Goal: Organize/Change -> JS-controlled scrolling & class toggling -> Memberikan pengalaman terpandu, bukan gulir bebas.
+        - Transisi Bagian -> Goal: Engagement -> CSS Transitions (opacity, transform) -> Membuat perpindahan antar bagian terasa halus dan elegan.
+        - Animasi Konten -> Goal: Inform/Engagement -> CSS Transitions pada elemen anak (reveal) -> Setiap teks dan gambar muncul secara dinamis saat bagiannya aktif, meningkatkan "wow factor".
+        - Modal (Galeri/Hadiah) -> Goal: Organize -> JS-controlled modals -> Menjaga setiap layar utama tetap bersih, dengan detail tambahan tersedia sesuai permintaan.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Mencegah scroll manual */
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #FDFBF8;
+            color: #5D544D;
+        }
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        .text-accent-dark { color: #8A7A6A; }
+        .btn-primary {
+            background-color: #A98F7A;
+            color: #FFFFFF;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #8A7A6A;
+            transform: scale(1.05);
+        }
+        
+        #invitation-container {
+            height: 100vh;
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            scroll-behavior: smooth;
+        }
+
+        #invitation-container::-webkit-scrollbar { display: none; }
+        #invitation-container { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .section-screen {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+            scroll-snap-align: start;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            visibility: hidden;
+        }
+
+        .section-screen.visible {
+           opacity: 1;
+           transform: translateY(0);
+           visibility: visible;
+        }
+
+        /* Background Image untuk semua section */
+        #section-1, #section-2, #section-3, #section-4, #section-5 {
+            background-size: cover;
+            background-position: center;
+        }
+        #section-1 { background-image: url('image/section1.gif'); }
+        #section-2 { background-image: url('image/section2.gif'); }
+        #section-3 { background-image: url('image/section3.gif'); }
+        #section-4 { background-image: url('image/section4.gif'); }
+        #section-5 { background-image: url('image/section5.gif'); }
+        
+        /* Penyesuaian warna teks agar kontras dengan background terang */
+        #section-1 .text-accent-dark, #section-1 p { color: #8A7A6A; }
+        #section-1 h1 { color: #5D544D; }
+
+        #section-2 h3, #section-2 h4, #section-3 h3, #section-3 h4, #section-4 h3, #section-4 h4, #section-5 h3, #section-5 h1 {
+            color: #5D544D;
+        }
+        #section-2 p, #section-3 p, #section-4 p, #section-5 p, #section-3 strong {
+            color: #8A7A6A;
+        }
+        #section-4 .border-dashed {
+            border-color: #D3C4B6;
+        }
+        
+        .section-screen > div {
+            position: relative;
+            z-index: 2;
+        }
+
+        .reveal-item {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        .visible .reveal-item {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .visible .reveal-item:nth-child(1) { transition-delay: 0.2s; }
+        .visible .reveal-item:nth-child(2) { transition-delay: 0.4s; }
+        .visible .reveal-item:nth-child(3) { transition-delay: 0.6s; }
+        .visible .reveal-item:nth-child(4) { transition-delay: 0.8s; }
+        .visible .reveal-item:nth-child(5) { transition-delay: 1.0s; }
+
+        .nav-button-container {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 10;
+        }
+
+        .nav-button {
+            cursor: pointer;
+            background: rgba(255,255,255,0.7);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .nav-button:hover {
+            transform: scale(1.1);
+            background: rgba(255,255,255,1);
+        }
+        .nav-button svg {
+            width: 20px;
+            height: 20px;
+            color: #5D544D;
+        }
+        .nav-button.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .modal {
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .modal.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="invitation-container">
+        <!-- Section 1: Hero -->
+        <section id="section-1" class="section-screen visible">
+            <div class="text-center">
+                <p class="text-lg text-accent-dark mb-4 reveal-item">Undangan Pernikahan</p>
+                <h1 class="font-serif text-5xl md:text-7xl font-bold reveal-item">Ima & Arif</h1>
+                <p class="mt-6 text-lg max-w-lg reveal-item">Dengan penuh rasa syukur, kami mengundang Anda untuk menjadi bagian dari momen bahagia kami.</p>
+                <button data-target="section-2" class="nav-action mt-8 py-3 px-8 rounded-full btn-primary reveal-item">Buka Undangan</button>
+            </div>
+        </section>
+
+        <!-- Section 2: Couple -->
+        <section id="section-2" class="section-screen">
+            <div class="text-center w-full max-w-4xl">
+                <h3 class="font-serif text-4xl mb-12 reveal-item">Mempelai</h3>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="text-center reveal-item">
+                        <h4 class="font-serif text-4xl">Syarifudin Zuhri</h4>
+                        <p class="mt-2 text-md">Putra ke-2 dari Bapak Syahro (Alm) & Ibu Kasiyem</p>
+                    </div>
+                    <div class="text-center reveal-item">
+                        <h4 class="font-serif text-4xl">Taslimah</h4>
+                        <p class="mt-2 text-md">Putri ke-8 dari Bapak H. Mochamad Ali (Alm) & Ibu Hj. Siti</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 3: Event Details -->
+        <section id="section-3" class="section-screen">
+             <div class="text-center w-full max-w-2xl">
+                <h3 class="font-serif text-4xl mb-8 reveal-item">Detail Acara</h3>
+                <div class="reveal-item">
+                    <h4 class="font-serif text-2xl">Akad Nikah & Resepsi</h4>
+                    <p class="mt-2"><strong>Sabtu, 23 Agustus 2025</strong></p>
+                    <p>Akad Nikah :  Pukul 09.00 WIB</p>
+					<p>Resepsi : Pukul 11.00 - 13.00 WIB</p>
+                    <p class="mt-4 font-bold">Plaza Anggrek LPPI</p>
+                    <p class="text-sm">Jl. Kemang Raya No.35, RT.12/RW.5, Bangka, Kec. Mampang Prpt., Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12730</p>
+                </div>
+                <a href="https://share.google/wLSsSqIxBMyfkRI1x" target="_blank" class="inline-block mt-8 py-3 px-6 rounded-full btn-primary reveal-item">
+                    Buka Peta Lokasi
+                </a>
+             </div>
+        </section>
+
+        <!-- Section 4: Gallery & Wishes -->
+        <section id="section-4" class="section-screen">
+            <div class="text-center w-full max-w-4xl">
+                 <h3 class="font-serif text-4xl mb-12 reveal-item">Galeri & Ucapan</h3>
+                 <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="text-center p-8 border-2 border-dashed rounded-lg reveal-item">
+                        <h4 class="font-serif text-2xl mb-4">Momen Bahagia</h4>
+                         <p class="mb-6">Beberapa kenangan yang kami abadikan.</p>
+                         <button id="btn-gallery" class="py-3 px-6 rounded-full btn-primary">Lihat Galeri Foto</button>
+                    </div>
+                    <div class="text-center p-8 border-2 border-dashed rounded-lg reveal-item">
+                        <h4 class="font-serif text-2xl mb-4">Kirim Hadiah</h4>
+                         <p class="mb-6">Doa restu Anda adalah kado terindah bagi kami.</p>
+                         <button id="btn-gift" class="py-3 px-6 rounded-full btn-primary">Amplop Digital</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 5: Closing -->
+        <section id="section-5" class="section-screen">
+            <div class="text-center">
+                <p class="text-lg mb-4 reveal-item">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Anda berkenan hadir untuk memberikan doa restu.</p>
+                <h3 class="font-serif text-3xl my-4 reveal-item">Terima Kasih</h3>
+                <h1 class="font-serif text-5xl md:text-7xl font-bold reveal-item">Ima & Arif</h1>
+            </div>
+        </section>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div id="side-nav" class="nav-button-container hidden">
+        <div id="nav-up" class="nav-button nav-action">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>
+        </div>
+        <div id="nav-down" class="nav-button nav-action">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="gallery-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                 <h4 class="font-serif text-2xl text-accent-dark">Galeri Foto</h4>
+                 <button class="close-modal text-3xl font-bold">&times;</button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <img src="https://placehold.co/400x400/E8DED2/5D544D?text=Foto+Anda+1" class="rounded-lg w-full h-auto object-cover" alt="Foto prewedding 1">
+                <img src="https://placehold.co/400x600/E8DED2/5D544D?text=Foto+Anda+2" class="rounded-lg w-full h-auto object-cover" alt="Foto prewedding 2">
+                <img src="https://placehold.co/400x400/E8DED2/5D544D?text=Foto+Anda+3" class="rounded-lg w-full h-auto object-cover" alt="Foto prewedding 3">
+            </div>
+        </div>
+    </div>
+    
+    <div id="gift-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg p-8 max-w-sm w-full text-center">
+             <div class="flex justify-between items-center mb-4">
+                <h4 class="font-serif text-2xl text-accent-dark">Amplop Digital</h4>
+                <button class="close-modal text-3xl font-bold">&times;</button>
+            </div>
+            <div class="space-y-4 text-left">
+                <div>
+                    <p class="font-bold">Bank Bahagia</p>
+                    <p>1234 5678 9012 (Adam Putra)</p>
+                </div>
+                 <div>
+                    <p class="font-bold">E-Wallet (GoPay / OVO)</p>
+                    <p>0812 3456 7890 (Hawa Putri)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const container = document.getElementById('invitation-container');
+            const sections = document.querySelectorAll('.section-screen');
+            const sideNav = document.getElementById('side-nav');
+            const navUp = document.getElementById('nav-up');
+            const navDown = document.getElementById('nav-down');
+            let currentSectionIndex = 0;
+
+            function updateNavButtons() {
+                sideNav.classList.remove('hidden');
+                navUp.classList.toggle('hidden', currentSectionIndex === 0);
+                navDown.classList.toggle('hidden', currentSectionIndex === sections.length - 1);
+                
+                navUp.setAttribute('data-target', `section-${currentSectionIndex}`);
+                navDown.setAttribute('data-target', `section-${currentSectionIndex + 2}`);
+            }
+
+            function scrollToSection(targetId) {
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+            
+            document.querySelectorAll('.nav-action').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = button.getAttribute('data-target');
+                    scrollToSection(targetId);
+                });
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const sectionId = entry.target.id;
+                        currentSectionIndex = Array.from(sections).findIndex(sec => sec.id === sectionId);
+                        entry.target.classList.add('visible');
+                        
+                        if (currentSectionIndex > 0) {
+                            updateNavButtons();
+                        } else {
+                            sideNav.classList.add('hidden');
+                        }
+                    } else {
+                        entry.target.classList.remove('visible');
+                    }
+                });
+            }, {
+                root: container,
+                threshold: 0.7
+            });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // Modal Logic
+            const galleryModal = document.getElementById('gallery-modal');
+            const btnGallery = document.getElementById('btn-gallery');
+            const giftModal = document.getElementById('gift-modal');
+            const btnGift = document.getElementById('btn-gift');
+            const closeButtons = document.querySelectorAll('.close-modal');
+
+            function openModal(modal) { modal.classList.remove('hidden'); }
+            function closeModal(modal) { modal.classList.add('hidden'); }
+
+            btnGallery.addEventListener('click', () => openModal(galleryModal));
+            btnGift.addEventListener('click', () => openModal(giftModal));
+
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    closeModal(galleryModal);
+                    closeModal(giftModal);
+                });
+            });
+
+            [galleryModal, giftModal].forEach(modal => {
+                 modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal(modal);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
