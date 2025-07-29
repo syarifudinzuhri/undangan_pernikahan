@@ -81,11 +81,13 @@
             background-size: cover;
             background-position: center center;
         }
-        #section-1 { background-image: url('image/section1.gif'); }
-        #section-2 { background-image: url('image/section2.gif'); }
-        #section-3 { background-image: url('image/section3.gif'); }
-        #section-4 { background-image: url('image/section4.gif'); }
-        #section-5 { background-image: url('image/section5.gif'); }
+
+        /* --- GAMBAR UNTUK DESKTOP (LANDSCAPE) --- */
+        #section-1 { background-image: url('image/section1-desktop.gif'); }
+        #section-2 { background-image: url('image/section2-desktop.gif'); }
+        #section-3 { background-image: url('image/section3-desktop.gif'); }
+        #section-4 { background-image: url('image/section4-desktop.gif'); }
+        #section-5 { background-image: url('image/section5-desktop.gif'); }
         
         /* Penyesuaian warna teks agar kontras dengan background terang */
         #section-1 .text-accent-dark, #section-1 p { color: #8A7A6A; }
@@ -169,6 +171,13 @@
 
         /* Perbaikan untuk perangkat mobile dan tablet */
         @media (max-width: 767px) {
+            /* --- GAMBAR UNTUK SMARTPHONE (PORTRAIT) --- */
+            #section-1 { background-image: url('image/section1-mobile.gif'); }
+            #section-2 { background-image: url('image/section2-mobile.gif'); }
+            #section-3 { background-image: url('image/section3-mobile.gif'); }
+            #section-4 { background-image: url('image/section4-mobile.gif'); }
+            #section-5 { background-image: url('image/section5-mobile.gif'); }
+
             .nav-button-container {
                 top: auto;
                 bottom: 20px;
