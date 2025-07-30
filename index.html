@@ -351,6 +351,33 @@
             sections.forEach(section => {
                 observer.observe(section);
             });
+
+            // Modal Logic
+            const galleryModal = document.getElementById('gallery-modal');
+            const btnGallery = document.getElementById('btn-gallery');
+            const giftModal = document.getElementById('gift-modal');
+            const btnGift = document.getElementById('btn-gift');
+            const closeButtons = document.querySelectorAll('.close-modal');
+
+            function openModal(modal) { modal.classList.remove('hidden'); }
+            function closeModal(modal) { modal.classList.add('hidden'); }
+
+            btnGallery.addEventListener('click', () => openModal(galleryModal));
+            btnGift.addEventListener('click', () => openModal(giftModal));
+
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    closeModal(galleryModal);
+                    closeModal(giftModal);
+                });
+            });
+
+            [galleryModal, giftModal].forEach(modal => {
+                 modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal(modal);
+                });
+            });
+        });
     </script>
 </body>
 </html>
