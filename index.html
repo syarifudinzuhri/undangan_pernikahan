@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Undangan Pernikahan Interaktif - Ima & Arif</title>
+    <title>Undangan Pernikahan Ima & Arif</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Warm Neutrals -->
     <!-- Application Structure Plan: Mengubah dari model gulir panjang menjadi SPA berbasis "layar penuh" per bagian. Setiap bagian (Hero, Mempelai, Acara, dll.) menempati seluruh viewport. Pengguna menavigasi antar bagian dengan tombol "lanjutkan", yang memicu transisi animasi ke bagian berikutnya. Struktur ini menciptakan alur cerita yang lebih terkontrol dan sinematik, sesuai permintaan pengguna untuk interaktivitas dan transisi antar informasi. -->
     <!-- Visualization & Content Choices: 
@@ -32,6 +32,12 @@
         }
         .font-serif {
             font-family: 'Playfair Display', serif;
+        }
+        .font-script {
+            font-family: 'Dancing Script', cursive;
+        }
+        .font-great-vibes {
+            font-family: 'Great Vibes', cursive;
         }
         .text-accent-dark { color: #8A7A6A; }
         .btn-primary {
@@ -93,7 +99,7 @@
         #section-1 .text-accent-dark, #section-1 p { color: #8A7A6A; }
         #section-1 h1 { color: #5D544D; }
 
-        #section-2 h3, #section-2 h4, #section-3 h3, #section-3 h4, #section-4 h3, #section-4 h4, #section-5 h3, #section-5 h1 {
+        #section-2 h3, #section-3 h3, #section-3 h4, #section-4 h3, #section-4 h4, #section-5 h3, #section-5 h1 {
             color: #5D544D;
         }
         #section-2 p, #section-3 p, #section-4 p, #section-5 p, #section-3 strong {
@@ -178,6 +184,16 @@
             #section-4 { background-image: url('image/section4-mobile.gif'); }
             #section-5 { background-image: url('image/section5-mobile.gif'); }
 
+            /* Menggeser konten ke atas agar tidak tertutup background */
+            #section-2 > div {
+                margin-bottom: 20vh;
+            }
+            #section-3 > div,
+            #section-4 > div,
+            #section-5 > div {
+                margin-bottom: 10vh;
+            }
+
             .nav-button-container {
                 top: auto;
                 bottom: 20px;
@@ -196,10 +212,10 @@
         <!-- Section 1: Hero -->
         <section id="section-1" class="section-screen visible">
             <div class="text-center">
-                <p class="text-lg text-accent-dark mb-4 reveal-item">Undangan Pernikahan</p>
-                <h1 class="font-serif text-5xl md:text-7xl font-bold reveal-item">Ima & Arif</h1>
-                <p class="mt-6 text-lg max-w-lg reveal-item">Dengan penuh rasa syukur, kami mengundang Anda untuk menjadi bagian dari momen bahagia kami.</p>
-                <button data-target="section-2" class="nav-action mt-8 py-3 px-8 rounded-full btn-primary reveal-item">Buka Undangan</button>
+                <p class="text-4xl font-great-vibes text-accent-dark mb-4 reveal-item">Undangan Pernikahan</p>
+                <h1 class="font-script text-6xl md:text-8xl font-bold reveal-item">Ima & Arif</h1>
+                <p class="mt-6 text-base max-w-lg reveal-item font-serif">Dengan penuh rasa syukur, kami mengundang Bapak/Ibu/Saudara/i untuk menjadi bagian dari momen bahagia kami.</p>
+                <button data-target="section-2" class="nav-action mt-8 py-3 px-8 rounded-full btn-primary reveal-item text-lg">Buka Undangan</button>
             </div>
         </section>
 
@@ -209,11 +225,11 @@
                 <h3 class="font-serif text-4xl mb-12 reveal-item">Mempelai</h3>
                 <div class="grid md:grid-cols-2 gap-12 items-center">
                     <div class="text-center reveal-item">
-                        <h4 class="font-serif text-4xl">Syarifudin Zuhri</h4>
+                        <h4 class="font-script text-6xl text-gray-700">Syarifudin Zuhri</h4>
                         <p class="mt-2 text-md">Putra ke-2 dari Bapak Syahro (Alm) & Ibu Kasiyem</p>
                     </div>
                     <div class="text-center reveal-item">
-                        <h4 class="font-serif text-4xl">Taslimah</h4>
+                        <h4 class="font-script text-6xl text-gray-700">Taslimah</h4>
                         <p class="mt-2 text-md">Putri ke-8 dari Bapak H. Mochamad Ali (Alm) & Ibu Hj. Siti</p>
                     </div>
                 </div>
@@ -226,17 +242,18 @@
                 <h3 class="font-serif text-4xl mb-8 reveal-item">Detail Acara</h3>
                 <div class="reveal-item grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="text-center">
-                        <h4 class="font-serif text-2xl">Akad Nikah</h4>
+                        <h4 class="font-script text-2xl">Akad Nikah</h4>
                         <p class="mt-2"><strong>Sabtu, 23 Agustus 2025</strong></p>
                         <p>09.00 WIB</p>
                     </div>
                     <div class="text-center">
-                        <h4 class="font-serif text-2xl">Resepsi</h4>
+                        <h4 class="font-script text-2xl">Resepsi</h4>
                         <p class="mt-2"><strong>Sabtu, 23 Agustus 2025</strong></p>
                         <p>11.00 - 13.00 WIB</p>
                     </div>
                 </div>
                 <div class="reveal-item mt-8">
+					<h4 class="font-script text-2xl">Lokasi</h4>
                     <p class="mt-4 font-bold">Plaza Anggrek LPPI</p>
                     <p class="text-sm">Jl. Kemang Raya No.35, RT.12/RW.5, Bangka, Kec. Mampang Prpt., Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12730</p>
                 </div>
@@ -246,22 +263,14 @@
              </div>
         </section>
 
-        <!-- Section 4: Gallery & Wishes -->
+        <!-- Section 4: Quran Verse -->
         <section id="section-4" class="section-screen">
-            <div class="text-center w-full max-w-4xl">
-                 <h3 class="font-serif text-4xl mb-12 reveal-item">Galeri & Ucapan</h3>
-                 <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <div class="text-center p-8 border-2 border-dashed rounded-lg reveal-item">
-                        <h4 class="font-serif text-2xl mb-4">Momen Bahagia</h4>
-                         <p class="mb-6">Beberapa kenangan yang kami abadikan.</p>
-                         <button id="btn-gallery" class="py-3 px-6 rounded-full btn-primary">Lihat Galeri Foto</button>
-                    </div>
-                    <div class="text-center p-8 border-2 border-dashed rounded-lg reveal-item">
-                        <h4 class="font-serif text-2xl mb-4">Kirim Hadiah</h4>
-                         <p class="mb-6">Doa restu Anda adalah kado terindah bagi kami.</p>
-                         <button id="btn-gift" class="py-3 px-6 rounded-full btn-primary">Amplop Digital</button>
-                    </div>
-                </div>
+            <div class="text-center w-full max-w-3xl">
+                 <h3 class="font-script text-5xl md:text-6xl mb-6 reveal-item">Q.S Ar-Rum Ayat 21</h3>
+                 <p class="text-lg md:text-xl font-serif italic reveal-item">
+                    "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir."
+                 </p>
+                 <h4 class="font-script text-5xl mt-8 reveal-item">I & A</h4>
             </div>
         </section>
         
@@ -270,7 +279,7 @@
             <div class="text-center">
                 <p class="text-lg mb-4 reveal-item">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Anda berkenan hadir untuk memberikan doa restu.</p>
                 <h3 class="font-serif text-3xl my-4 reveal-item">Terima Kasih</h3>
-                <h1 class="font-serif text-5xl md:text-7xl font-bold reveal-item">Ima & Arif</h1>
+                <h1 class="font-script text-6xl md:text-8xl font-bold reveal-item">Ima & Arif</h1>
             </div>
         </section>
     </div>
