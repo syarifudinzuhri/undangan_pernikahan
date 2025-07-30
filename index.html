@@ -277,7 +277,7 @@
         <!-- Section 5: Closing -->
         <section id="section-5" class="section-screen">
             <div class="text-center">
-                <p class="text-lg md:text-xl font-serif italic reveal-item">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Anda berkenan hadir untuk memberikan doa restu.</p>
+                <p class="bg-white bg-opacity-30 p-4 rounded-lg shadow text-lg md:text-xl font-serif italic reveal-item">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Anda berkenan hadir untuk memberikan doa restu.</p>
                 <h3 class="font-serif text-3xl my-4 reveal-item">Terima Kasih</h3>
                 <h1 class="font-script text-6xl md:text-8xl font-bold reveal-item">Ima & Arif</h1>
             </div>
@@ -351,33 +351,6 @@
             sections.forEach(section => {
                 observer.observe(section);
             });
-
-            // Modal Logic
-            const galleryModal = document.getElementById('gallery-modal');
-            const btnGallery = document.getElementById('btn-gallery');
-            const giftModal = document.getElementById('gift-modal');
-            const btnGift = document.getElementById('btn-gift');
-            const closeButtons = document.querySelectorAll('.close-modal');
-
-            function openModal(modal) { modal.classList.remove('hidden'); }
-            function closeModal(modal) { modal.classList.add('hidden'); }
-
-            btnGallery.addEventListener('click', () => openModal(galleryModal));
-            btnGift.addEventListener('click', () => openModal(giftModal));
-
-            closeButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    closeModal(galleryModal);
-                    closeModal(giftModal);
-                });
-            });
-
-            [galleryModal, giftModal].forEach(modal => {
-                 modal.addEventListener('click', (e) => {
-                    if (e.target === modal) closeModal(modal);
-                });
-            });
-        });
     </script>
 </body>
 </html>
