@@ -105,9 +105,6 @@
         #section-2 p, #section-3 p, #section-4 p, #section-5 p, #section-3 strong {
             color: #8A7A6A;
         }
-        #section-4 .border-dashed {
-            border-color: #D3C4B6;
-        }
         
         .section-screen > div {
             position: relative;
@@ -167,14 +164,6 @@
             pointer-events: none;
         }
 
-        .modal {
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-        }
-        .modal.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-
         /* Perbaikan untuk perangkat mobile dan tablet */
         @media (max-width: 767px) {
             /* --- GAMBAR UNTUK SMARTPHONE (PORTRAIT) --- */
@@ -208,6 +197,12 @@
 </head>
 <body class="antialiased">
 
+    <!-- Elemen Audio -->
+    <audio id="background-music" loop>
+        <source src="music/bgm_music.mp3" type="audio/mpeg">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
+
     <div id="invitation-container">
         <!-- Section 1: Hero -->
         <section id="section-1" class="section-screen visible">
@@ -215,7 +210,7 @@
                 <p class="text-4xl font-great-vibes text-accent-dark mb-4 reveal-item">Undangan Pernikahan</p>
                 <h1 class="font-script text-6xl md:text-8xl font-bold reveal-item">Ima & Arif</h1>
                 <p class="mt-6 text-base max-w-lg reveal-item font-serif">Dengan penuh rasa syukur, kami mengundang Bapak/Ibu/Saudara/i untuk menjadi bagian dari momen bahagia kami.</p>
-                <button data-target="section-2" class="nav-action mt-8 py-3 px-8 rounded-full btn-primary reveal-item text-lg">Buka Undangan</button>
+                <button data-target="section-2" id="open-invitation-btn" class="nav-action mt-8 py-3 px-8 rounded-full btn-primary reveal-item text-lg">Buka Undangan</button>
             </div>
         </section>
 
@@ -296,6 +291,39 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const music = document.getElementById('background-music');
+            
+            // Fungsi untuk mencoba memutar musik
+            const playMusic = () => {
+                const promise = music.play();
+                if (promise !== undefined) {
+                    promise.catch(error => {
+                        // Autoplay dicegah, akan diputar saat interaksi pertama
+                        console.log("Autoplay was prevented. Waiting for user interaction.");
+                        // Tambahkan listener untuk interaksi pertama kali
+                        document.body.addEventListener('click', playMusic, { once: true });
+                    }).then(() => {
+                        // Autoplay berhasil
+                        console.log("Music started automatically.");
+                    });
+                }
+            };
+
+            // Coba putar musik saat halaman dimuat
+            playMusic();
+
+            // Mengontrol musik berdasarkan visibilitas tab
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    music.pause();
+                } else {
+                   // Hanya putar kembali jika audio pernah dimulai dan sedang tidak diputar
+                   if (music.currentTime > 0 && music.paused) {
+                       music.play();
+                   }
+                }
+            });
+
             const container = document.getElementById('invitation-container');
             const sections = document.querySelectorAll('.section-screen');
             const sideNav = document.getElementById('side-nav');
@@ -350,32 +378,6 @@
 
             sections.forEach(section => {
                 observer.observe(section);
-            });
-
-            // Modal Logic
-            const galleryModal = document.getElementById('gallery-modal');
-            const btnGallery = document.getElementById('btn-gallery');
-            const giftModal = document.getElementById('gift-modal');
-            const btnGift = document.getElementById('btn-gift');
-            const closeButtons = document.querySelectorAll('.close-modal');
-
-            function openModal(modal) { modal.classList.remove('hidden'); }
-            function closeModal(modal) { modal.classList.add('hidden'); }
-
-            btnGallery.addEventListener('click', () => openModal(galleryModal));
-            btnGift.addEventListener('click', () => openModal(giftModal));
-
-            closeButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    closeModal(galleryModal);
-                    closeModal(giftModal);
-                });
-            });
-
-            [galleryModal, giftModal].forEach(modal => {
-                 modal.addEventListener('click', (e) => {
-                    if (e.target === modal) closeModal(modal);
-                });
             });
         });
     </script>
